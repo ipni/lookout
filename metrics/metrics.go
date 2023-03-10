@@ -95,7 +95,7 @@ func (m *Metrics) NotifySampleSet(_ context.Context, ss *sample.Set) {
 
 func (m *Metrics) NotifyCheckResults(ctx context.Context, results *check.Results) {
 	checkerAttr := attribute.String("checker", results.CheckerName)
-	sampleAttr := attribute.String("sample", results.SampleSetName)
+	sampleAttr := attribute.String("sampler", results.SampleSetName)
 	var success int
 	for _, result := range results.Results {
 		if result.StatusCode == http.StatusOK {
