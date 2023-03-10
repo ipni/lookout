@@ -78,20 +78,21 @@ func (l *Lookout) check(ctx context.Context, targets <-chan *sample.Set) {
 			results := perform.InParallel(ctx, l.checkersParallelism, l.checkers, func(ctx context.Context, c check.Checker) *check.Results {
 				return c.Check(ctx, ss)
 			})
-		ResultsLoop:
-			for {
-				select {
-				case <-ctx.Done():
-					logger.Warnw("Check cycle stopped while performing checks.", "err", ctx.Err())
-					return
-				case r, ok := <-results:
-					if !ok {
-						break ResultsLoop
+			go func() {
+				for {
+					select {
+					case <-ctx.Done():
+						logger.Warnw("Check cycle stopped while performing checks.", "err", ctx.Err())
+						return
+					case r, ok := <-results:
+						if !ok {
+							logger.Info("Checks finished.")
+							return
+						}
+						l.metrics.NotifyCheckResults(ctx, r)
 					}
-					l.metrics.NotifyCheckResults(ctx, r)
 				}
-			}
-			logger.Info("Checks finished.")
+			}()
 		}
 	}
 }
