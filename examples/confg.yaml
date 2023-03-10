@@ -1,0 +1,22 @@
+checkers:
+  cid_contact:
+    type: ipni-non-streaming
+    ipniEndpoint: https://cid.contact
+    Timeout: 30s
+    ipfsDhtCascade: false
+    parallelism: 10
+  cid_contact_with_cascade:
+    type: ipni-non-streaming
+    ipniEndpoint: https://cid.contact
+    Timeout: 30s
+    ipfsDhtCascade: true
+    parallelism: 10
+samplers:
+  'awesome.ipfs.io/datasets':
+    type: awesome-ipfs-datasets
+  'orchestrator.strn.pl/top-cids':
+    type: saturn-orch-top-cids
+checkInterval: 10m
+checkersParallelism: 10
+samplersParallelism: 10
+metricsListenAddr: 0.0.0.0:40080

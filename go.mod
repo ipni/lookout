@@ -11,6 +11,7 @@ require (
 	go.opentelemetry.io/otel/exporters/prometheus v0.37.0
 	go.opentelemetry.io/otel/metric v0.37.0
 	go.opentelemetry.io/otel/sdk/metric v0.37.0
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (

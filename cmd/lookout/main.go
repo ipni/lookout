@@ -5,19 +5,17 @@ import (
 	"flag"
 	"os"
 	"os/signal"
-	"time"
 
 	"github.com/ipfs/go-log/v2"
 	"github.com/ipni/lookout"
-	"github.com/ipni/lookout/check"
-	"github.com/ipni/lookout/sample"
+	"github.com/ipni/lookout/cmd/lookout/internal"
 )
 
 var logger = log.Logger("ipni/lookout/cmd")
 
 func main() {
 
-	checkInterval := flag.Duration("checkInterval", 10*time.Minute, "The interval at which checks are run.")
+	config := flag.String("config", "config.yaml", "The path to lookout YAML config file.")
 	logLevel := flag.String("logLevel", "info", "The logging level. Only applied if GOLOG_LOG_LEVEL environment variable is unset.")
 	flag.Parse()
 
@@ -25,29 +23,16 @@ func main() {
 		_ = log.SetLogLevel("*", *logLevel)
 	}
 
-	checkerWithDhtCascade, err := check.NewIpniNonStreamingChecker(
-		check.WithName("cid_contact_with_cascade"),
-		check.WithIpniEndpoint("https://cid.contact"),
-		check.WithCheckTimeout(30*time.Second),
-		check.WithIpfsDhtCascade(true),
-	)
+	cfg, err := internal.NewConfig(*config)
 	if err != nil {
-		logger.Fatalw("Failed to instantiate checker", "err", err)
+		logger.Fatalw("Failed to load config from path", "path", *config, "err", err)
 	}
-	checkerWithoutDhtCascade, err := check.NewIpniNonStreamingChecker(
-		check.WithName("cid_contact"),
-		check.WithIpniEndpoint("https://cid.contact"),
-		check.WithCheckTimeout(30*time.Second),
-		check.WithIpfsDhtCascade(false),
-	)
+	opts, err := cfg.ToOptions()
 	if err != nil {
-		logger.Fatalw("Failed to instantiate checker", "err", err)
+		logger.Fatalw("Failed to generate options from config", "path", *config, "err", err)
 	}
-	l, err := lookout.New(
-		lookout.WithCheckers(checkerWithDhtCascade, checkerWithoutDhtCascade),
-		lookout.WithSamplers(&sample.SaturnTopCidsSampler{}, &sample.AwesomeIpfsDatasets{}),
-		lookout.WithCheckInterval(*checkInterval),
-	)
+
+	l, err := lookout.New(opts...)
 	if err != nil {
 		logger.Fatalw("Failed to instantiate lookout", "err", err)
 	}

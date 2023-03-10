@@ -19,6 +19,15 @@ var (
 const awesomeIpfsDatasets = "https://awesome.ipfs.io/datasets/"
 
 type AwesomeIpfsDatasets struct {
+	*options
+}
+
+func NewAwesomeIpfsDatasets(o ...Option) (*AwesomeIpfsDatasets, error) {
+	opts, err := newOptions(o...)
+	if err != nil {
+		return nil, err
+	}
+	return &AwesomeIpfsDatasets{options: opts}, nil
 }
 
 func (s *AwesomeIpfsDatasets) Sample(ctx context.Context) (*Set, error) {
@@ -57,6 +66,6 @@ func (s *AwesomeIpfsDatasets) Sample(ctx context.Context) (*Set, error) {
 	}
 	return &Set{
 		Multihashes: mhs.slice(),
-		Name:        "awesome.ipfs.io/datasets",
+		Name:        s.name,
 	}, nil
 }
