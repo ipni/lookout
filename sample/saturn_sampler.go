@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/ipfs/go-cid"
-	"github.com/multiformats/go-multihash"
 )
 
 var _ Sampler = (*SaturnTopCidsSampler)(nil)
@@ -31,9 +30,7 @@ func (s *SaturnTopCidsSampler) Sample(ctx context.Context) (*Set, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&scids); err != nil {
 		return nil, err
 	}
-	// TODO: improve efficiency of uniqueness check with crc32 hashes
-	cids := map[cid.Cid]struct{}{}
-	var mhs []multihash.Multihash
+	mhs := newMultihashSet()
 	for _, sc := range scids {
 		cc := strings.SplitN(sc, "/", 2)
 		if len(cc) > 0 {
@@ -42,17 +39,14 @@ func (s *SaturnTopCidsSampler) Sample(ctx context.Context) (*Set, error) {
 				logger.Warnw("Invalid CID from saturn orchestrator", "cid", cc[0], "originalValue", sc, "err", err)
 				continue
 			}
-			if _, exists := cids[c]; !exists {
-				cids[c] = struct{}{}
-				mhs = append(mhs, c.Hash())
-			}
+			mhs.putIfAbsent(c.Hash())
 		}
 	}
-	if len(mhs) == 0 {
+	if mhs.len() == 0 {
 		logger.Warn("No CIDs were found from saturn orchestrator")
 	}
 	return &Set{
-		Multihashes: mhs,
+		Multihashes: mhs.slice(),
 		Name:        "orchestrator.strn.pl/top-cids",
 	}, nil
 }
