@@ -45,7 +45,7 @@ func main() {
 	}
 	l, err := lookout.New(
 		lookout.WithCheckers(checkerWithDhtCascade, checkerWithoutDhtCascade),
-		lookout.WithSamplers(&sample.SaturnTopCidsSampler{}),
+		lookout.WithSamplers(&sample.SaturnTopCidsSampler{}, &sample.AwesomeIpfsDatasets{}),
 		lookout.WithCheckInterval(*checkInterval),
 	)
 	if err != nil {
