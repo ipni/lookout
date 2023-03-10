@@ -10,7 +10,7 @@ import (
 type (
 	Option  func(*options) error
 	options struct {
-		httpListenAddr      string
+		metricsListenAddr   string
 		checkInterval       *time.Ticker
 		checkersParallelism int
 		samplersParallelism int
@@ -21,7 +21,7 @@ type (
 
 func newOptions(o ...Option) (*options, error) {
 	opts := options{
-		httpListenAddr:      "0.0.0.0:40080",
+		metricsListenAddr:   "0.0.0.0:40080",
 		checkInterval:       time.NewTicker(5 * time.Minute),
 		checkersParallelism: 10,
 		samplersParallelism: 10,
@@ -35,9 +35,9 @@ func newOptions(o ...Option) (*options, error) {
 	return &opts, nil
 }
 
-func WithHttpListenAddr(a string) Option {
+func WithMetricsListenAddr(a string) Option {
 	return func(o *options) error {
-		o.httpListenAddr = a
+		o.metricsListenAddr = a
 		return nil
 	}
 }
@@ -59,6 +59,20 @@ func WithSamplers(s ...sample.Sampler) Option {
 func WithCheckInterval(i time.Duration) Option {
 	return func(o *options) error {
 		o.checkInterval = time.NewTicker(i)
+		return nil
+	}
+}
+
+func WithCheckersParallelism(p int) Option {
+	return func(o *options) error {
+		o.checkersParallelism = p
+		return nil
+	}
+}
+
+func WithSamplersParallelism(p int) Option {
+	return func(o *options) error {
+		o.samplersParallelism = p
 		return nil
 	}
 }

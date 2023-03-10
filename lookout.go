@@ -33,7 +33,7 @@ func New(o ...Option) (*Lookout, error) {
 		return nil, err
 	}
 	l.s = &http.Server{
-		Addr:      l.httpListenAddr,
+		Addr:      l.metricsListenAddr,
 		Handler:   l.serveMux(),
 		TLSConfig: nil,
 	}

@@ -14,6 +14,15 @@ var _ Sampler = (*SaturnTopCidsSampler)(nil)
 const saturnTopCids = "https://orchestrator.strn.pl/top-cids"
 
 type SaturnTopCidsSampler struct {
+	*options
+}
+
+func NewSaturnTopCidsSampler(o ...Option) (*SaturnTopCidsSampler, error) {
+	opts, err := newOptions(o...)
+	if err != nil {
+		return nil, err
+	}
+	return &SaturnTopCidsSampler{options: opts}, nil
 }
 
 func (s *SaturnTopCidsSampler) Sample(ctx context.Context) (*Set, error) {
@@ -47,6 +56,6 @@ func (s *SaturnTopCidsSampler) Sample(ctx context.Context) (*Set, error) {
 	}
 	return &Set{
 		Multihashes: mhs.slice(),
-		Name:        "orchestrator.strn.pl/top-cids",
+		Name:        s.name,
 	}, nil
 }
