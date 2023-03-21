@@ -2,14 +2,15 @@ checkers:
   cid_contact:
     type: ipni-non-streaming
     ipniEndpoint: https://cid.contact
-    Timeout: 30s
-    ipfsDhtCascade: false
+    timeout: 30s
     parallelism: 10
   cid_contact_with_cascade:
     type: ipni-non-streaming
     ipniEndpoint: https://cid.contact
-    Timeout: 30s
-    ipfsDhtCascade: true
+    timeout: 30s
+    cascadeLabels:
+      - ipfs-dht
+      - legacy
     parallelism: 10
 samplers:
   'awesome.ipfs.io/datasets':

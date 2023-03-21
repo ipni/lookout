@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ipfs/go-cid"
 	"github.com/ipni/lookout/perform"
 	"github.com/ipni/lookout/sample"
-	"github.com/multiformats/go-multihash"
 )
 
 type (
@@ -28,19 +28,21 @@ func NewIpniNonStreamingChecker(o ...Option) (*IpniNonStreamingChecker, error) {
 
 func (c *IpniNonStreamingChecker) Check(ctx context.Context, set *sample.Set) *Results {
 	results := &Results{
-		Results:       make([]*Result, 0, len(set.Multihashes)),
+		Results:       make([]*Result, 0, len(set.Cids)),
 		SampleSetName: set.Name,
 		CheckerName:   c.name,
 	}
-	rch := perform.InParallel(ctx, c.parallelism, set.Multihashes, func(ctx context.Context, mh multihash.Multihash) *Result {
+	rch := perform.InParallel(ctx, c.parallelism, set.Cids, func(ctx context.Context, mh cid.Cid) *Result {
 		result := &Result{
-			Multihash: mh,
+			Multihash: mh.Hash(),
 			Timeout:   c.checkTimeout,
 		}
-		path := c.ipniEndpoint.JoinPath("multihash", mh.B58String())
-		if c.ipfsDhtCascade {
+		path := c.ipniEndpoint.JoinPath("cid", mh.String())
+		if len(c.cascadeLabels) != 0 {
 			query := path.Query()
-			query.Add("cascade", "ipfs-dht")
+			for _, label := range c.cascadeLabels {
+				query.Add("cascade", label)
+			}
 			path.RawQuery = query.Encode()
 		}
 		start := time.Now()

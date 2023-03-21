@@ -10,12 +10,12 @@ import (
 type (
 	Option  func(*options) error
 	options struct {
-		name           string
-		httpClient     *http.Client
-		checkTimeout   time.Duration
-		ipniEndpoint   *url.URL
-		parallelism    int
-		ipfsDhtCascade bool
+		name          string
+		httpClient    *http.Client
+		checkTimeout  time.Duration
+		ipniEndpoint  *url.URL
+		parallelism   int
+		cascadeLabels []string
 	}
 )
 
@@ -85,9 +85,9 @@ func WithParallelism(parallelism int) Option {
 	}
 }
 
-func WithIpfsDhtCascade(ipfsDhtCascade bool) Option {
+func WithCascadeLabels(l []string) Option {
 	return func(o *options) error {
-		o.ipfsDhtCascade = ipfsDhtCascade
+		o.cascadeLabels = l
 		return nil
 	}
 }

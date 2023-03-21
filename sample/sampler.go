@@ -3,8 +3,8 @@ package sample
 import (
 	"context"
 
+	"github.com/ipfs/go-cid"
 	"github.com/ipfs/go-log/v2"
-	"github.com/multiformats/go-multihash"
 )
 
 var logger = log.Logger("ipni/lookout/sample")
@@ -14,7 +14,7 @@ type (
 		Sample(context.Context) (*Set, error)
 	}
 	Set struct {
-		Name        string
-		Multihashes []multihash.Multihash
+		Name string
+		Cids []cid.Cid
 	}
 )

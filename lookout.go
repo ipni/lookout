@@ -72,7 +72,7 @@ func (l *Lookout) check(ctx context.Context, targets <-chan *sample.Set) {
 				logger.Info("Checkers cycle stopped; no more work")
 				return
 			}
-			logger := logger.With("size", len(ss.Multihashes), "name", ss.Name)
+			logger := logger.With("size", len(ss.Cids), "name", ss.Name)
 			logger.Info("Running checks on sample set...")
 
 			results := perform.InParallel(ctx, l.checkersParallelism, l.checkers, func(ctx context.Context, c check.Checker) *check.Results {
@@ -118,7 +118,7 @@ func (l *Lookout) sample(ctx context.Context, check chan<- *sample.Set) {
 				if set == nil {
 					continue
 				}
-				logger.Infow("Selected samples", "count", len(set.Multihashes), "name", set.Name)
+				logger.Infow("Selected samples", "count", len(set.Cids), "name", set.Name)
 				l.metrics.NotifySampleSet(ctx, set)
 				select {
 				case <-ctx.Done():

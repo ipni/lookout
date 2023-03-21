@@ -39,7 +39,7 @@ func (s *SaturnTopCidsSampler) Sample(ctx context.Context) (*Set, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&scids); err != nil {
 		return nil, err
 	}
-	mhs := newMultihashSet()
+	cids := newCidSet()
 	for _, sc := range scids {
 		cc := strings.SplitN(sc, "/", 2)
 		if len(cc) > 0 {
@@ -48,14 +48,14 @@ func (s *SaturnTopCidsSampler) Sample(ctx context.Context) (*Set, error) {
 				logger.Warnw("Invalid CID from saturn orchestrator", "cid", cc[0], "originalValue", sc, "err", err)
 				continue
 			}
-			mhs.putIfAbsent(c.Hash())
+			cids.putIfAbsent(c)
 		}
 	}
-	if mhs.len() == 0 {
+	if cids.len() == 0 {
 		logger.Warn("No CIDs were found from saturn orchestrator")
 	}
 	return &Set{
-		Multihashes: mhs.slice(),
-		Name:        s.name,
+		Cids: cids.slice(),
+		Name: s.name,
 	}, nil
 }
