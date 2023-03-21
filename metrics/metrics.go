@@ -90,7 +90,7 @@ func (m *Metrics) observeLookupSuccessRatio(_ context.Context, observer instrume
 func (m *Metrics) NotifySampleSet(_ context.Context, ss *sample.Set) {
 	m.observablesLock.Lock()
 	defer m.observablesLock.Unlock()
-	m.sampleSetSizes[ss.Name] = int64(len(ss.Multihashes))
+	m.sampleSetSizes[ss.Name] = int64(len(ss.Cids))
 }
 
 func (m *Metrics) NotifyCheckResults(ctx context.Context, results *check.Results) {

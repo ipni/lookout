@@ -17,11 +17,11 @@ type (
 	SamplerType string
 	Config      struct {
 		Checkers map[string]struct {
-			Type           CheckerType   `yaml:"type"`
-			Timeout        time.Duration `yaml:"timeout"`
-			IpniEndpoint   string        `yaml:"ipniEndpoint"`
-			IpfsDhtCascade bool          `yaml:"ipfsDhtCascade"`
-			Parallelism    int           `yaml:"parallelism"`
+			Type          CheckerType   `yaml:"type"`
+			Timeout       time.Duration `yaml:"timeout"`
+			IpniEndpoint  string        `yaml:"ipniEndpoint"`
+			CascadeLabels []string      `yaml:"cascadeLabels"`
+			Parallelism   int           `yaml:"parallelism"`
 		} `yaml:"checkers"`
 		Samplers map[string]struct {
 			Type SamplerType `yaml:"type"`
@@ -29,6 +29,7 @@ type (
 		CheckInterval       time.Duration `yaml:"checkInterval"`
 		CheckersParallelism int           `yaml:"checkersParallelism"`
 		SamplersParallelism int           `yaml:"samplersParallelism"`
+		MetricsListenAddr   string        `yaml:"metricsListenAddr"`
 	}
 )
 
@@ -57,7 +58,7 @@ func (c *Config) ToOptions() ([]lookout.Option, error) {
 	for name, cc := range c.Checkers {
 		copts := []check.Option{
 			check.WithName(name),
-			check.WithIpfsDhtCascade(cc.IpfsDhtCascade),
+			check.WithCascadeLabels(cc.CascadeLabels),
 		}
 		if cc.Timeout != 0 {
 			copts = append(copts, check.WithCheckTimeout(cc.Timeout))
@@ -112,6 +113,9 @@ func (c *Config) ToOptions() ([]lookout.Option, error) {
 	}
 	if c.SamplersParallelism > 0 {
 		opts = append(opts, lookout.WithSamplersParallelism(c.SamplersParallelism))
+	}
+	if c.MetricsListenAddr != "" {
+		opts = append(opts, lookout.WithMetricsListenAddr(c.MetricsListenAddr))
 	}
 	return opts, nil
 }

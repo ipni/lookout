@@ -49,7 +49,7 @@ func (s *AwesomeIpfsDatasets) Sample(ctx context.Context) (*Set, error) {
 		return nil, err
 	}
 	matches := cidHrefMatcher.FindAllSubmatch(all, -1)
-	mhs := newMultihashSet()
+	cids := newCidSet()
 	for _, match := range matches {
 		if len(match) > 1 {
 			cidMatch := string(match[1])
@@ -58,14 +58,14 @@ func (s *AwesomeIpfsDatasets) Sample(ctx context.Context) (*Set, error) {
 				logger.Warnw("Failed to decode match as CID", "match", cidMatch, "err", err)
 				continue
 			}
-			mhs.putIfAbsent(c.Hash())
+			cids.putIfAbsent(c)
 		}
 	}
-	if mhs.len() == 0 {
+	if cids.len() == 0 {
 		logger.Warn("No CIDs were found from IPFS Awesome Datasets")
 	}
 	return &Set{
-		Multihashes: mhs.slice(),
-		Name:        s.name,
+		Cids: cids.slice(),
+		Name: s.name,
 	}, nil
 }
