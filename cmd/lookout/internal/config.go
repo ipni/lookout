@@ -38,6 +38,7 @@ const (
 
 	saturnOrchestratorTopCids SamplerType = "saturn-orch-top-cids"
 	awesomeIpfsDatasets       SamplerType = "awesome-ipfs-datasets"
+	internetArchiveTopCids    SamplerType = "internet-archive-top-cids"
 )
 
 func NewConfig(p string) (*Config, error) {
@@ -95,6 +96,12 @@ func (c *Config) ToOptions() ([]lookout.Option, error) {
 			samplers = append(samplers, s)
 		case awesomeIpfsDatasets:
 			s, err := sample.NewAwesomeIpfsDatasets(nameOpt)
+			if err != nil {
+				return nil, err
+			}
+			samplers = append(samplers, s)
+		case internetArchiveTopCids:
+			s, err := sample.NewInternetArchiveTopCidsSampler(nameOpt)
 			if err != nil {
 				return nil, err
 			}
