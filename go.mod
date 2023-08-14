@@ -1,6 +1,6 @@
 module github.com/ipni/lookout
 
-go 1.19
+go 1.20
 
 require (
 	github.com/ipfs/go-cid v0.3.2
