@@ -1,6 +1,6 @@
 module github.com/ipni/lookout
 
-go 1.20
+go 1.24.0
 
 require (
 	github.com/ipfs/go-cid v0.3.2
@@ -40,8 +40,8 @@ require (
 	go.uber.org/goleak v1.1.12 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
-	golang.org/x/crypto v0.31.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/crypto v0.45.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	lukechampine.com/blake3 v1.1.7 // indirect
 )
